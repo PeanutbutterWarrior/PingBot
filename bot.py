@@ -40,14 +40,14 @@ async def on_message(message):
     try:
         ceres = await message.guild.query_members(user_ids=[625582561103446026])
         ceres = ceres[0]
-            # destiny pings
+        # destiny pings
         if message.author.id == 621417848346247198:
             await message.channel.send(f'oohh destiny tweet!! {ceres.mention}')
 
         # mc pings
         if message.author.id == 330657316196188172 and 'Java' in msgctnt:
             await message.channel.send(f'oohh destiny tweet!! {ceres.mention}')
-    except:
+    except AttributeError:
         pass
             
 
@@ -60,8 +60,6 @@ async def on_message(message):
         await message.channel.send(choice(craigSimp))
 
 
-
-    # probs should do the command thingy for this but eh
     # general commands
     if '\\' == msgctnt[0]:
         if msgctnt[1:] == 'help':
