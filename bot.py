@@ -22,6 +22,13 @@ craigSimp = [
     ':sparkles::sparkling_heart::smiling_face_with_3_hearts: I LOVE YOU CRAIG!!!! :sparkles::sparkling_heart::smiling_face_with_3_hearts:'
 ]
 
+bonkGifs = ['https://tenor.com/view/statewide-rp-mess-with-the-honk-you-get-the-bonk-baseballbat-untitled-goose-game-gif-17204101',
+'https://tenor.com/view/mihoyo-genshin-genshin-impact-paimon-you-deserved-gif-23340767',
+'https://tenor.com/view/chikku-neesan-girl-hit-wall-stfu-anime-girl-smack-gif-17078255',
+'https://tenor.com/view/anime-bonk-gif-22497698',
+'https://tenor.com/view/horny-bonk-gif-22415732',
+'https://tenor.com/view/no-horny-gura-bonk-gif-22888944']
+
 @client.event
 async def on_ready():
     info = f'{client.user} is connected!'
@@ -92,7 +99,11 @@ async def on_message(message):
             except ValueError:
                 await message.channel.send(f'{user.mention} *bonk*')
                 cmdLen = 2
-            bonkmsg = msgctnt.split(' ', cmdLen)[-1]
+            tempSplit = msgctnt.split(' ', cmdLen)
+            if cmdLen < len(tempSplit) and tempSplit[-1] != 'gif':
+                bonkmsg = tempSplit[-1]
+            else:
+                bonkmsg = choice(bonkGifs)
             await message.channel.send(bonkmsg)
             info = f'{message.author} used bonk: {msgctnt}'
 
