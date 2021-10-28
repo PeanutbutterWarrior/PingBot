@@ -2,11 +2,14 @@
 import os
 
 import discord
-from discord.ext import commands
-from discord.ext.commands.core import command
+import logging
 from dotenv import load_dotenv
 from random import choice
 import time
+
+logging.basicConfig(filename='logs\std.log', format='%(asctime)s %(message)s', filemode='a')
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -21,20 +24,15 @@ craigSimp = [
 
 @client.event
 async def on_ready():
-    print(
-        f'{client.user} is connected!'
-    )
+    info = f'{client.user} is connected!'
+    print(info)
+    logger.info(info)
 
-def getMessage(msgctnt, cmdLen):
-    messageSplit = msgctnt.split(' ')
-    del messageSplit[0:cmdLen]
-    msg = ''
-    for word in messageSplit: msg += word + ' '
-    return msg[:-1]
-        
+
+
+
 @client.event
 async def on_message(message):
-
     msgctnt = message.content.lower()
 
     try:
@@ -43,11 +41,13 @@ async def on_message(message):
         # destiny pings
         if message.author.id == 621417848346247198:
             await message.channel.send(f'oohh destiny tweet!! {ceres.mention}')
+            info = f'detected destiny announcement'
 
         # mc pings
         if message.author.id == 330657316196188172 and 'Java' in msgctnt:
             await message.channel.send(f'oohh destiny tweet!! {ceres.mention}')
-    except AttributeError:
+            info = f'detected minecraft java announcement'
+    except AttributeError as e:
         pass
             
 
@@ -58,21 +58,29 @@ async def on_message(message):
     # obvs is a craig simp
     if message.author.id == 899743143744925698:
         await message.channel.send(choice(craigSimp))
+        info = f'replied to {message.author}: {msgctnt}'
 
 
     # general commands
     if '\\' == msgctnt[0]:
-        if msgctnt[1:] == 'help':
-            await message.channel.send('```help: this command\npingme: literally just pings you\nbonk [user] [times] [message]: pings [user] specified number of times, finishes with [message]```')
+        messageSplit = msgctnt.split(' ')
+        cmd = str(messageSplit[0])[1:]
+        if cmd == 'help':
+            await message.channel.send('''```help: this command
+            \npingme: literally just pings you
+            \nbonk [user] [times] [message]: pings [user] specified number of times, finishes with [message]
+            ```''')
+            info = f'{message.author} used help: {msgctnt}'
         
-        elif msgctnt[1:] == 'pingme':
+        elif cmd == 'pingme':
             await message.channel.send(f'hi {message.author.mention}')
+            info = f'{message.author} used pingme: {msgctnt}'
         
-        elif msgctnt[1:] == 'stop' and message.author.id == 625582561103446026:
+        elif cmd == 'stop' and message.author.id == 625582561103446026:
+            info = f'{message.author} used stop: {msgctnt}'
             exit()
         
-        elif msgctnt[1:5] == 'bonk':
-            messageSplit = msgctnt.split(' ')
+        elif cmd == 'bonk':
             user = message.mentions[-1]
             try:
                 if len(messageSplit)>2:
@@ -84,16 +92,27 @@ async def on_message(message):
             except ValueError:
                 await message.channel.send(f'{user.mention} *bonk*')
                 cmdLen = 2
-            bonkmsg = getMessage(msgctnt, cmdLen)
+            bonkmsg = msgctnt.split(' ', cmdLen)[-1]
             await message.channel.send(bonkmsg)
+            info = f'{message.author} used bonk: {msgctnt}'
 
-        elif msgctnt[1:3] == 'dm':
-            user = message.mentions[-1]
-            await user.create_dm()
-            msg = getMessage(msgctnt, cmdLen=2)
-            await user.dm_channel.send(msg)
+
+        # elif cmd == 'dm':
+        #     user = message.mentions[-1]
+        #     await user.create_dm()
+        #     msg = msgctnt.split(' ', 2)[-1]
+        #     await user.dm_channel.send(msg)
+        #     info = f'{message.author} used dm: {msgctnt}'
+
         else:
             await message.channel.send('hmmm, I\'m not sure I recognise that command. try `\help` for a list of commands')
+            info = f'{message.author} tried to use an invalid command: {msgctnt}'
+    
+    try:
+        print(info)
+        logger.info(info)
+    except UnboundLocalError:
+        pass
         
 
 client.run(TOKEN)
