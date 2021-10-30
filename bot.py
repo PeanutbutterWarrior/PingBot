@@ -89,6 +89,7 @@ async def on_message(message):
         
         elif cmd == 'bonk':
             user = message.mentions[-1]
+            await message.delete()
             try:
                 if len(messageSplit)>2:
                         for i in range(int(messageSplit[2])):
