@@ -108,21 +108,20 @@ async def on_message(message):
             await message.channel.send(bonkmsg)
             info = f'{message.author} used bonk: {msgctnt}'
 
-
-        # elif cmd == 'dm':
-        #     user = message.mentions[-1]
-        #     await user.create_dm()
-        #     msg = msgctnt.split(' ', 2)[-1]
-        #     await user.dm_channel.send(msg)
-        #     info = f'{message.author} used dm: {msgctnt}'
+        elif cmd == 'dm' and message.author.id == 625582561103446026:
+            user = message.mentions[-1]
+            await user.create_dm()
+            msg = msgctnt.split(' ', 2)[-1]
+            await user.dm_channel.send(msg)
+            info = f'{message.author} used dm: {msgctnt}'
 
         else:
             await message.channel.send('hmmm, I\'m not sure I recognise that command. try `\help` for a list of commands')
             info = f'{message.author} tried to use an invalid command: {msgctnt}'
     
     try:
-        print(info)
-        logger.info(info)
+        print(f'{message.channel.guild}: {message.channel}: {info}')
+        logger.info(f'{message.channel.guild}: {message.channel}: {info}')
     except UnboundLocalError:
         pass
         
